@@ -1,4 +1,4 @@
-use vars qw($VERSION %IRSSI $path);
+use vars qw($VERSION %IRSSI);
 
 use Irssi;
 use LWP::Simple qw/get/;
@@ -191,18 +191,22 @@ sub handleinput {
 		return;
 	}
 	
-	if ($msg =~ m/(spotify:track:\w{22})/ || $msg =~ m/(http:\/\/open.spotify.com\/track\/\w{22})/) {
-		my $track = &getTrackinfo($1);
+	# If we got Spotify URL do replace to get URI format instead
+	$msg =~ s/.com\//:/;
+	$msg =~ s/\//:/g;
+
+	if ($msg =~ m/(https?:\/\/(open|play).)?(spotify:track:\w{22})/) {
+		my $track = &getTrackinfo($3);
 		$server->command('msg ' . $target . ' ' . $track);
 		return;
 	}
-	if ($msg =~ m/(spotify:album:\w{22})/ || $msg =~ m/(http:\/\/open.spotify.com\/album\/\w{22})/) {
-		my $album = &getAlbuminfo($1);
+	if ($msg =~ m/(https?:\/\/(open|play).)?(spotify:album:\w{22})/) {
+		my $album = &getAlbuminfo($3);
 		$server->command('msg ' . $target . ' ' . $album);
 		return;
 	}
-	if ($msg =~ m/(spotify:artist:\w{22})/ || $msg =~ m/(http:\/\/open.spotify.com\/artist\/\w{22})/) {
-		my $artist = &getArtistinfo($1);
+	if ($msg =~ m/(https?:\/\/(open|play).)?(spotify:artist:\w{22})/) {
+		my $artist = &getArtistinfo($3);
 		$server->command('msg ' . $target . ' ' . $artist);
 		return;
 	}
